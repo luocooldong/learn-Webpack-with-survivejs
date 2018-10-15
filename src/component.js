@@ -6,5 +6,15 @@ export default (text = "Hello world") => {
   element.className = "pure-button";
   element.innerHTML = text;
 
+
+  element.onclick = () =>
+  import("./lazy")
+    .then(lazy => {
+      element.textContent = lazy.default;
+    })
+    .catch(err => {
+      console.error(err);
+    });
+
   return element;
 };

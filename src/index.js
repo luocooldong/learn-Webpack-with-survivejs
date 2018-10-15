@@ -1,5 +1,9 @@
 console.log("Hello world");
 
+import "react";
+import "react-dom";
+
+
 import component from "./component";
 
 import "purecss";

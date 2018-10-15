@@ -20,16 +20,23 @@ const commonConfig = merge([
     plugins: [
       new HtmlWebpackPlugin({
         title: "Webpack demo"
-      })
+      }),
+      // new webpack.optimize.LimitChunkCountPlugin({
+      //   maxChunks: 1,
+      // }),
     ]
   },
 
   parts.purifyCSS({
     paths: glob.sync(`${PATHS.app}/**/*.js`, { nodir: true }),
   }),
+
+  parts.loadJavaScript({ include: PATHS.app }),
 ])
 
 const productionConfig = merge([
+  parts.generateSourceMaps({ type: "source-map" }),
+
   parts.extractCSS({
     // use: "css-loader",
     use: ["css-loader", parts.autoprefix()],
@@ -40,6 +47,19 @@ const productionConfig = merge([
       name: "[name].[ext]",
     },
   }),
+  {
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          commons: {
+            test: /[\\/]node_modules[\\/]/,
+            name: "vendor",
+            chunks: "initial",
+          },
+        },
+      },
+    },
+  },
 ]);
 
 const developmentConfig = merge([
@@ -53,6 +73,10 @@ const developmentConfig = merge([
 ])
 
 module.exports = mode => {
+  process.env.BABEL_ENV = mode;
+
+
+
   if (mode === "production") {
     return merge(commonConfig, productionConfig, { mode })
   }
