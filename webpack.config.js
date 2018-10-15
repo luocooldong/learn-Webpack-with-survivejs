@@ -3,13 +3,14 @@ const HtmlWebpackPlugin = require("html-webpack-plugin")
 
 const parts = require("./webpack.parts")
 
-
 const path = require("path");
 const glob = require("glob");
 
 
 const PATHS = {
   app: path.join(__dirname, "src"),
+
+  build: path.join(__dirname, "dist"),
 };
 
 const commonConfig = merge([
@@ -27,6 +28,19 @@ const commonConfig = merge([
     ]
   },
 
+  parts.minifyJavaScript(),
+
+  parts.minifyCSS({
+    options: {
+      discardComments: {
+        removeAll: true,
+      },
+      // Run cssnano in safe mode to avoid
+      // potentially unsafe transformations.
+      safe: true,
+    },
+  }),
+
   parts.purifyCSS({
     paths: glob.sync(`${PATHS.app}/**/*.js`, { nodir: true }),
   }),
@@ -35,6 +49,10 @@ const commonConfig = merge([
 ])
 
 const productionConfig = merge([
+  parts.clean(PATHS.build),
+
+  parts.minifyJavaScript(),
+
   parts.generateSourceMaps({ type: "source-map" }),
 
   parts.extractCSS({
@@ -60,6 +78,8 @@ const productionConfig = merge([
       },
     },
   },
+
+  parts.attachRevision(),
 ]);
 
 const developmentConfig = merge([
@@ -83,3 +103,5 @@ module.exports = mode => {
 
   return merge(commonConfig, developmentConfig, { mode })
 }
+
+
