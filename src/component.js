@@ -1,11 +1,8 @@
-export default (text = "Hello world") => {
+export default (text = HELLO) => {
   const element = document.createElement("div");
-
-
 
   element.className = "pure-button";
   element.innerHTML = text;
-
 
   element.onclick = () =>
   import("./lazy")

@@ -46,9 +46,22 @@ const commonConfig = merge([
   }),
 
   parts.loadJavaScript({ include: PATHS.app }),
+
+  parts.setFreeVariable("HELLO", "hello from config"),
+
 ])
 
 const productionConfig = merge([
+
+  {
+    output: {
+      chunkFilename: "[name].[chunkhash:4].js",
+      filename: "[name].[chunkhash:4].js",
+    },
+    recordsPath: path.join(__dirname, "records.json"),
+  },
+
+
   parts.clean(PATHS.build),
 
   parts.minifyJavaScript(),
@@ -62,7 +75,8 @@ const productionConfig = merge([
   parts.loadImages({
     options: {
       limit: 15000,
-      name: "[name].[ext]",
+      // name: "[name].[ext]",
+      name: "[name].[hash:4].[ext]",
     },
   }),
   {
@@ -76,10 +90,17 @@ const productionConfig = merge([
           },
         },
       },
+
+      runtimeChunk: {
+        name: "manifest",
+      },
+
     },
   },
 
   parts.attachRevision(),
+
+
 ]);
 
 const developmentConfig = merge([
